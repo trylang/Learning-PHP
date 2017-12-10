@@ -17,7 +17,7 @@ use think\Request;
 
 class ExceptionHandler extends Handle
 {
-    public function render(Exception $e)
+    public function render(\Exception $e)
     {
         if($e instanceof BaseException) {
             // 自定义的异常
@@ -45,7 +45,7 @@ class ExceptionHandler extends Handle
         return json($result, $this->code);
     }
 
-    private function recordErrorLog(Exception $e) {
+    private function recordErrorLog(\Exception $e) {
         Log::init([
            'type' => 'File',
            'path' => LOG_PATH,

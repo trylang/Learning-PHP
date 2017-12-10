@@ -31,10 +31,11 @@ class Banner
             //BannerMissException 必须是Exception类，否则会报错
             // 如果想要让BannerMissException智能感知，就需要在BaseException中继承Exception类才可以
 //            throw new BannerMissException();
-            throw new Exception('内部错误');
+//            throw new Exception('内部错误');
+            throw new BannerMissException();
         }
 
-        return $banner;
+        return json($banner);
 
         // 独立验证
 //        $data = [
