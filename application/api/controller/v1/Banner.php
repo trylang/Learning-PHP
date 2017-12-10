@@ -8,9 +8,10 @@
 
 namespace app\api\controller\v1;
 
-//use think\Validate;
 use app\api\validate\IDMustBePostiveInt;
-//use app\api\validate\TestValidate;
+use app\api\model\Banner as BannerModel;
+use app\lib\exception\BannerMissException;
+use think\Exception;
 
 class Banner
 {
@@ -23,6 +24,17 @@ class Banner
      */
     public function getBanner($id) {
         (new IDMustBePostiveInt())->goCheck();
+
+        $banner = BannerModel::getBannerByID($id);
+
+        if (!$banner) {
+            //BannerMissException 必须是Exception类，否则会报错
+            // 如果想要让BannerMissException智能感知，就需要在BaseException中继承Exception类才可以
+//            throw new BannerMissException();
+            throw new Exception('内部错误');
+        }
+
+        return $banner;
 
         // 独立验证
 //        $data = [
