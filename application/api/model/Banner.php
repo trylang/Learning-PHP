@@ -24,6 +24,7 @@ class Banner extends Model
         // id是Banner当前模型的主键
         return $this->hasMany('BannerItem', 'banner_id', 'id');
     }
+
     public static function getBannerByID($id) {
 
         // 第一种查询数据库方式，直接使用sql语句

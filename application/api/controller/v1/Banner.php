@@ -25,7 +25,8 @@ class Banner
     public function getBanner($id) {
         (new IDMustBePostiveInt())->goCheck();
 
-        $banner = BannerModel::with('items')->get($id);
+        // 如果这里只能用find方法，不能用get();
+        $banner = BannerModel::with(['items', 'items.img'])->find($id);
 //        $banner = new BannerModel();
 //        $banner = $banner->get($id);
 //        $banner = BannerModel::getBannerByID($id);
