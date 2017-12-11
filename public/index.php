@@ -19,3 +19,10 @@ define('LOG_PATH', __DIR__ . '/../log/');
 
 // 加载框架引导文件
 require __DIR__ . '/../thinkphp/start.php';
+
+// 为了记录每次接口访问都会记录日志，需要在跟文件进行初始配置
+\think\Log::init([
+   'type' => 'File',
+   'path' => LOG_PATH,
+   'level' => ['sql']
+]);

@@ -25,7 +25,10 @@ class Banner
     public function getBanner($id) {
         (new IDMustBePostiveInt())->goCheck();
 
-        $banner = BannerModel::getBannerByID($id);
+        $banner = BannerModel::get($id);
+//        $banner = new BannerModel();
+//        $banner = $banner->get($id);
+//        $banner = BannerModel::getBannerByID($id);
 
         if (!$banner) {
             //BannerMissException 必须是Exception类，否则会报错
@@ -34,7 +37,7 @@ class Banner
 //            throw new Exception('内部错误');
             throw new BannerMissException();
         }
-
+//        return $banner;
         return json($banner);
 
         // 独立验证
