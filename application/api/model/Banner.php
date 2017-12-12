@@ -8,13 +8,9 @@
 
 namespace app\api\model;
 
-
-use think\Db;
-use think\Exception;
-use think\Model;
-
-class Banner extends Model
+class Banner extends BaseModel
 {
+    protected $hidden = ['delete_time', 'update_time'];
     // 受保护的成员变量，如此thinkPHP就知道查询的是哪张表。如果不写，则thinkPHP默认认为表名与类名Banner相同
 //    protected $table = 'category';
 
@@ -27,6 +23,13 @@ class Banner extends Model
 
     public static function getBannerByID($id) {
 
+        // 如果这里只能用find方法，不能用get();
+//        $banner = BannerModel::with(['items', 'items.img'])->find($id);//
+        // BannerModel 这个静态方法就是在这个Banner模型类下面，所以直接用self，如果用BannerModel就会报错
+        $banner = self::with(['items', 'items.img'])->find($id);
+
+        return $banner;
+
         // 第一种查询数据库方式，直接使用sql语句
 //        $result = Db::query(
 //            'select * from banner_item where banner_id=?', [$id]
@@ -36,12 +39,12 @@ class Banner extends Model
 //            ->where('banner_id', '=', $id)
 //            ->select();
         //where 闭包法
-        $result = Db::table('banner_item')
-//            -> fetchSql() 如果使用fetchSql方法，则$result只会返回sql语句，而不会返回数据库数据
-            -> where(function($query) use ($id) {
-               $query->where('banner_id', '=', $id);
-            })
-            -> select();
-        return $result;
+//        $result = Db::table('banner_item')
+////            -> fetchSql() 如果使用fetchSql方法，则$result只会返回sql语句，而不会返回数据库数据
+//            -> where(function($query) use ($id) {
+//               $query->where('banner_id', '=', $id);
+//            })
+//            -> select();
+//        return $result;
     }
 }

@@ -23,13 +23,16 @@ class Banner
      *
      */
     public function getBanner($id) {
+
+        // AOP 面向切面编程
         (new IDMustBePostiveInt())->goCheck();
 
-        // 如果这里只能用find方法，不能用get();
-        $banner = BannerModel::with(['items', 'items.img'])->find($id);
 //        $banner = new BannerModel();
 //        $banner = $banner->get($id);
-//        $banner = BannerModel::getBannerByID($id);
+        $banner = BannerModel::getBannerByID($id);
+
+//        // 隐藏返回字段的一种办法
+//        $banner->hidden(['update_time', 'delete_time']);
 
         if (!$banner) {
             //BannerMissException 必须是Exception类，否则会报错
@@ -39,6 +42,7 @@ class Banner
             throw new BannerMissException();
         }
 //        return $banner;
+        $imagesUrl = config('setting.img_prefix');
         return json($banner);
 
         // 独立验证
