@@ -18,3 +18,5 @@ Route::get('api/:version/theme', 'api/:version.Theme/getSimpleList');
 // 如果想让路由完全匹配，不然就不会走到下面这个：id的路由，不会执行getComplexOne，这时就需要修改config.php的配置文件，
 // 将route_complete_match修改成true
 Route::get('api/:version/theme/:id', 'api/:version.Theme/getComplexOne');
+
+Route::get('api/:version/recent', 'api/:version.Product/getRecent');

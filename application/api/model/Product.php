@@ -18,4 +18,13 @@ class Product extends BaseModel
     protected function getMainImgUrlAttr($value, $data){
         return $this->prefixImgUrl($value, $data);
     }
+
+    public static function getMostRecent($count) {
+
+        // limit 指定数量
+        $products = self::limit($count)
+            ->order('create_time desc')
+            ->select();
+        return $products;
+    }
 }
