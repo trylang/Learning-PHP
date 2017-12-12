@@ -10,10 +10,22 @@ namespace app\api\controller\v1;
 
 use app\api\validate\IDCollection;
 
+use app\api\model\Theme as ThemeModel;
+use app\lib\exception\ThemeException;
+
 class Theme
 {
     public function getSimpleList($ids = '') {
         (new IDCollection())->goCheck();
-        return 'sussess';
+
+        $ids = explode(',', $ids);
+        $result = ThemeModel::with(['topicImg', 'headImg'])
+            ->select($ids);
+
+        if(!$result) {
+            throw new ThemeException();
+        }
+        // 返回的是一个数据集
+        return $result;
     }
 }
