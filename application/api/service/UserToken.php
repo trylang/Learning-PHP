@@ -44,18 +44,18 @@ class UserToken extends Token
             if($loginFail) {
                 $this->processLoginError($wxResult);
             }else {
-                $this->grantToken($wxResult);
+                return $this->grantToken($wxResult);
             }
         }
     }
 
     private function saveToCache($cachedValue) {
         $key = self::generateToken();
-        // json_decode是将对象转化成字符串
-        $value= json_decode($cachedValue);
+        // json_encode是将对象转化成字符串
+        $value= json_encode($cachedValue);
         $expire_in = config('setting.token_expire_in');
 
-        // cache是TP5自带的缓存方法
+        // cache是TP5自带的缓存方法,cache是以文件存储
         $request = cache($key, $value, $expire_in);
 
         if(!$request) {
