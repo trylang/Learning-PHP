@@ -34,4 +34,8 @@ class Product extends BaseModel
             ->select();
         return $products;
     }
+
+    public static function getProductDetail($id) {
+
+    }
 }
