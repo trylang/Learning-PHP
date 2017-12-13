@@ -19,4 +19,39 @@ Route::get('api/:version/theme', 'api/:version.Theme/getSimpleList');
 // 将route_complete_match修改成true
 Route::get('api/:version/theme/:id', 'api/:version.Theme/getComplexOne');
 
-Route::get('api/:version/recent', 'api/:version.Product/getRecent');
+Route::get('api/:version/product/recent', 'api/:version.Product/getRecent');
+
+Route::get('api/:version/product/by_category', 'api/:version.Product/getAllInCategory');
+
+Route::get('api/:version/category/all', 'api/:version.Category/getAllCategories');
+
+// 获取令牌用post，安全性稍微比get强一些
+Route::post('api/:version/token/user', 'api/:version.Token/getToken');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

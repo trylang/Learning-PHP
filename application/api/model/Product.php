@@ -27,4 +27,11 @@ class Product extends BaseModel
             ->select();
         return $products;
     }
+
+    public static function getProductsByCategoryID($categoryID) {
+        // 查询条件用where
+        $products = self::where('category_id', '=', $categoryID)
+            ->select();
+        return $products;
+    }
 }

@@ -23,7 +23,7 @@ class Theme
         $result = ThemeModel::with(['topicImg', 'headImg'])
             ->select($ids);
 
-        if(!$result) {
+        if($result->isEmpty()) {
             throw new ThemeException();
         }
         // 返回的是一个数据集
