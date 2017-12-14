@@ -33,6 +33,8 @@ Route::get('api/:version/category/all', 'api/:version.Category/getAllCategories'
 // 获取令牌用post，安全性稍微比get强一些
 Route::post('api/:version/token/user', 'api/:version.Token/getToken');
 
+Route::post('api/:version/address', 'api/:version.Address/createOrUpdateAddress');
+
 
 
 
