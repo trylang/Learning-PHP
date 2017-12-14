@@ -35,7 +35,7 @@ class Address
         $userAddress = $user->address;
         if(!$userAddress) {
             // 没有用户地址，就新增一个，这里的新增没有使用create，还是使用的关联新增
-            $user->address->save($dataArray);
+            $user->address()->save($dataArray);
         }else {
             // 更新地址
             $user->address->save($dataArray);
