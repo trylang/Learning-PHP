@@ -19,11 +19,14 @@ Route::get('api/:version/theme', 'api/:version.Theme/getSimpleList');
 // 将route_complete_match修改成true
 Route::get('api/:version/theme/:id', 'api/:version.Theme/getComplexOne');
 
-Route::get('api/:version/product/recent', 'api/:version.Product/getRecent');
+// 路由分组
+Route::group('api/:version/product', function () {
+   Route::get('/by_category', 'api/:version.Product/getAllInCategory');
+   Route::get('/recent', 'api/:version.Product/getRecent');
+   //路由必须匹配是数字才会走这个路由，否则就会和recent冲突
+   Route::get('/:id', 'api/:version.Product/getOne', [], ['id'=>'\d+']);
 
-Route::get('api/:version/product/by_category', 'api/:version.Product/getAllInCategory');
-
-Route::get('api/:version/product/:id', 'api/:version.Product/getOne');
+});
 
 Route::get('api/:version/category/all', 'api/:version.Category/getAllCategories');
 
