@@ -8,14 +8,37 @@
 
 namespace app\api\controller\v1;
 
+use app\api\controller\BaseController;
 use app\api\model\User as UserModel;
 use app\api\validate\AddressNew;
 use app\api\service\Token as TokenService;
+use app\lib\enum\ScopeEnum;
+use app\lib\exception\ForbiddenException;
 use app\lib\exception\SuccessMessage;
+use app\lib\exception\TokenException;
 use app\lib\exception\UserException;
 
-class Address
+class Address extends BaseController
 {
+    // 前置方法(前置方法必须继承自controller)，在执行某方法之前必须先执行此方法（也相当于是拦截器）
+    protected $beforeActionList = [
+        'checkPrimaryScope' => ['only' => 'createOrUpdateAddress']
+    ];
+
+    protected function checkPrimaryScope() {
+        $scope = TokenService::getCurrentTokenVar('scope');
+        if($scope) {
+            if($scope >= ScopeEnum::User) {
+                return true;
+            }
+            else {
+                throw new ForbiddenException();
+            }
+        } else {
+            throw new TokenException();
+        }
+    }
+
     public function createOrUpdateAddress() {
         $validata = new AddressNew();
         $validata->goCheck();
