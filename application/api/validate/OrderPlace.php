@@ -50,15 +50,20 @@ class OrderPlace extends BaseValidate
         }
 
         foreach ($values as $value) {
-            $this
+            $this->checkProduct($value);
         }
-
+        return true;
     }
 
-    // 只有$rule是可以自动触发
+    // 只有$rule是可以自动触发，而自己自定义的规则需要手动触发，触发函数checkProduct
     private function checkProduct($value) {
         $validate = new BaseValidate($this->singleRule);
-
+        $result = $validate->check($value); // check是TP5自带检测方法
+        if(!$result) {
+            throw new ParameterException([
+               'msg' => '商品列表参数错误'
+            ]);
+        }
     }
 
 }
