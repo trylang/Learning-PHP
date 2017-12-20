@@ -10,6 +10,7 @@ namespace app\api\service;
 
 
 use app\api\model\Product;
+use app\lib\exception\OrderException;
 
 class Order
 {
@@ -53,7 +54,59 @@ class Order
         return $products;
     }
 
+    // 订单信息
+    private function getOrderStatus() {
+        $status = [
+            'pass' => true,
+            'orderPrice' => 0,
+            'pStatusArray' => []
+        ];
+        foreach ($this->oProducts as $oProduct) {
+            $pSatus = $this->getProductStatus($oProduct['product_id'], $oProduct['count'], $this->products);
+            if (!$pSatus['haveStock']) {
+                $status['pass'] = false;
+            }
+            $status['orderPrice'] += $pSatus['totalPrice'];
+            array_push($status['pStatusArray'], $pSatus);
+        }
+        return $status;
+    }
 
+    // 数据库产品库存信息
+    private function getProductStatus($oPID, $oCount, $products) {
+        $pIndex = -1;
+        $pStatus = [
+          'id' => null,
+          'haveStock' => false,
+          'count' => 0,
+          'name' => '',
+          'totalPrice' => 0
+        ];
+
+        for ($i = 0; $i < count($products); $i++) {
+            if ($oPID == $products[$i]['id']) {
+                $pIndex = $i;
+            }
+        }
+
+        if ($pIndex == -1) {
+             //客户端传递的productID有可能根本不存在
+            throw new OrderException([
+               'msg' => 'id为' . $oPID . '的商品不存在，订单创建失败'
+            ]);
+        } else {
+            $product = $products[$pIndex];
+            $pStatus['id'] = $product['id'];
+            $pStatus['name'] = $product['name'];
+            $pStatus['count'] = $oCount;
+            $pStatus['totalPrice'] = $product['price'] * $oCount;
+
+            if ($product['stock'] - $oCount >= 0) {
+                $pStatus['haveStock'] = true;
+            }
+        }
+        return $pStatus;
+    }
 
 
 
