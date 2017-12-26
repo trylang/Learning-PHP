@@ -106,5 +106,30 @@ class Token
         }
     }
 
+    // 检测是否是当前用户的正确操作，因为此方法会在其他地方多次调用到，所以用public定义
+    public static function isValidOperate($checkedUID) {
+        if(!$checkedUID) {
+            throw new Exception('检查UID时必须传入一个被检查的UID');
+        }
+        $currentOperateUID = self::getCurrentUID();
+        if($currentOperateUID == $checkedUID) {
+            return true;
+        }
+        return false;
+    }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -97,6 +97,91 @@ class Order
 
     }
 
+     // 由于监测库存状态会应用到多个地方，需要设置一个public方法方便模型Pay的调用，
+    // 而模型Pay只有一个订单orderId，所以编写一个方法通过orderid查库存状态
+    public function checkOrderStock($orderID) {
+        $oProducts = OrderProduct::where('order_id', '=', $orderID)
+            ->select();
+        $this->oProducts = $oProducts;
+        $this->products = $this->getProductsByOrder($oProducts);
+
+        $status = $this->getOrderStatus();
+        return $status;
+    }
+
+    // 订单信息
+    private function getOrderStatus() {
+        $status = [
+            'pass' => true,
+            'orderPrice' => 0,
+            'totalCount' => 0,
+            'pStatusArray' => []
+        ];
+        foreach ($this->oProducts as $oProduct) {
+            $pSatus = $this->getProductStatus($oProduct['product_id'], $oProduct['count'], $this->products);
+            if (!$pSatus['haveStock']) {
+                $status['pass'] = false;
+            }
+            $status['orderPrice'] += $pSatus['totalPrice'];
+            $status['totalCount'] += $pSatus['count'];
+            array_push($status['pStatusArray'], $pSatus);
+        }
+        return $status;
+    }
+
+    // 根据订单信息查找真实的商品信息
+    private function getProductsByOrder($oProducts) {
+
+//        foreach($oProducts as $oProduct) {
+//            // 循环的查询数据库，这种方法不可取
+//        }循环的查询数据库
+        $oPIDs = [];
+        foreach($oProducts as $item) {
+            array_push($oPIDs, $item['product_id']);
+        }
+        // 直接visible之后是数据集，还需要toArray方法转换成数组，才方便和oProducts做对比
+        $products = Product::all($oPIDs)
+            ->visible(['id', 'price', 'stock', 'name', 'main_img_url'])
+            ->toArray();
+        return $products;
+    }
+
+    // 数据库产品库存信息
+    private function getProductStatus($oPID, $oCount, $products) {
+        $pIndex = -1;
+        $pStatus = [
+          'id' => null,
+          'haveStock' => false,
+          'count' => 0,
+          'name' => '',
+          'totalPrice' => 0
+        ];
+
+        for ($i = 0; $i < count($products); $i++) {
+            if ($oPID == $products[$i]['id']) {
+                $pIndex = $i;
+            }
+        }
+
+        if ($pIndex == -1) {
+             //客户端传递的productID有可能根本不存在
+            throw new OrderException([
+               'msg' => 'id为' . $oPID . '的商品不存在，订单创建失败'
+            ]);
+        } else {
+            $product = $products[$pIndex];
+            $pStatus['id'] = $product['id'];
+            $pStatus['name'] = $product['name'];
+            $pStatus['count'] = $oCount;
+            $pStatus['totalPrice'] = $product['price'] * $oCount;
+
+            if ($product['stock'] - $oCount >= 0) {
+                $pStatus['haveStock'] = true;
+            }
+        }
+        return $pStatus;
+    }
+
     // 生成订单编号
     public static function makeOrderNo() {
         $yCode = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J');
@@ -138,79 +223,6 @@ class Order
             ]);
         }
         return $userAddress->toArray();
-    }
-
-    // 根据订单信息查找真实的商品信息
-    private function getProductsByOrder($oProducts) {
-
-//        foreach($oProducts as $oProduct) {
-//            // 循环的查询数据库，这种方法不可取
-//        }循环的查询数据库
-        $oPIDs = [];
-        foreach($oProducts as $item) {
-            array_push($oPIDs, $item['product_id']);
-        }
-        // 直接visible之后是数据集，还需要toArray方法转换成数组，才方便和oProducts做对比
-        $products = Product::all($oPIDs)
-            ->visible(['id', 'price', 'stock', 'name', 'main_img_url'])
-            ->toArray();
-        return $products;
-    }
-
-    // 订单信息
-    private function getOrderStatus() {
-        $status = [
-            'pass' => true,
-            'orderPrice' => 0,
-            'totalCount' => 0,
-            'pStatusArray' => []
-        ];
-        foreach ($this->oProducts as $oProduct) {
-            $pSatus = $this->getProductStatus($oProduct['product_id'], $oProduct['count'], $this->products);
-            if (!$pSatus['haveStock']) {
-                $status['pass'] = false;
-            }
-            $status['orderPrice'] += $pSatus['totalPrice'];
-            $status['totalCount'] += $pSatus['count'];
-            array_push($status['pStatusArray'], $pSatus);
-        }
-        return $status;
-    }
-
-    // 数据库产品库存信息
-    private function getProductStatus($oPID, $oCount, $products) {
-        $pIndex = -1;
-        $pStatus = [
-          'id' => null,
-          'haveStock' => false,
-          'count' => 0,
-          'name' => '',
-          'totalPrice' => 0
-        ];
-
-        for ($i = 0; $i < count($products); $i++) {
-            if ($oPID == $products[$i]['id']) {
-                $pIndex = $i;
-            }
-        }
-
-        if ($pIndex == -1) {
-             //客户端传递的productID有可能根本不存在
-            throw new OrderException([
-               'msg' => 'id为' . $oPID . '的商品不存在，订单创建失败'
-            ]);
-        } else {
-            $product = $products[$pIndex];
-            $pStatus['id'] = $product['id'];
-            $pStatus['name'] = $product['name'];
-            $pStatus['count'] = $oCount;
-            $pStatus['totalPrice'] = $product['price'] * $oCount;
-
-            if ($product['stock'] - $oCount >= 0) {
-                $pStatus['haveStock'] = true;
-            }
-        }
-        return $pStatus;
     }
 
 
