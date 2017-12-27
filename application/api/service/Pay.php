@@ -45,6 +45,7 @@ class Pay
         if(!$status['pass']) {
             return $status;
         }
+        return $this->makeWxPreOrder($status['orderPrice']);
 
     }
 
@@ -63,7 +64,8 @@ class Pay
         $wxOrderData->SetBody('零食商贩');
         $wxOrderData->SetOpenid($openid);
         // 异步回调方法，传入回调方法名
-        $wxOrderData->SetNotify_url('');
+        $wxOrderData->SetNotify_url(config('secure.pay_back_url'));
+        return $this->getPaySignature($wxOrderData);
     }
 
     // 获取订单签名
@@ -73,6 +75,39 @@ class Pay
             Log::record($wxOrder, 'error');
             Log::record('获取预支付订单失败', 'error');
         }
+        // prepay_id
+        $this->recordPreOrder($wxOrder);
+        $signature = $this->sign($wxOrder);
+        return $signature;
+    }
+
+    private function sign($wxOrder) {
+        $jsApiPayData = new \WxPayApi();
+        $jsApiPayData->SetAppid(config('wx.app_id'));
+        $jsApiPayData->SetTimeStamp((string)time());
+
+        // 随机数
+        $rand = md5(time() . mt_rand(0, 1000));
+        $jsApiPayData->SetNonceStr($rand);
+
+        $jsApiPayData->SetPackage('prepay_id='.$wxOrder['prepay_id']);
+        $jsApiPayData->SetSignType('md5');
+        $sign = $jsApiPayData->MakeSign();
+
+        // 将$jsApiPayData对象转化成小程序需要的传参格式数组
+        $rawValues = $jsApiPayData->GetValues();
+        // $jsApiPayData添加paySign属性
+        $rawValues['paySign'] = $sign;
+        // 删除APPId属性
+        unset($rawValues['appId']);
+        return $rawValues;
+
+    }
+
+    // 找到订单id，更新写入prepay_id的值
+    private function recordPreOrder($wxOrder) {
+        OrderModel::where('id', '=', $this->orderID)
+            ->update(['prepay_id'=>$wxOrder['prepay_id']]);
     }
 
     private function checkOrderValid() {
