@@ -42,59 +42,19 @@ Page({
   },
 
   onProductsItemtap: function(event) {
-    console.log(event);
-    var id = null;
+    // Base类已经被home-model引入，所以可直接home调用方法
+    var id = home.getDataSet(event, 'id');
     wx.navigateTo({
-      url: '../product/product?id' + id
+      url: '../product/product?id=' + id
     })
   },
 
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function () {
-  
-  },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow: function () {
-  
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
-  
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function () {
-  
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {
-  
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function () {
-  
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function () {
-  
+  /*跳转到主题列表*/
+  onThemesItemTap: function (event) {
+    var id = home.getDataSet(event, 'id');
+    var name = home.getDataSet(event, 'name');
+    wx.navigateTo({
+      url: '../theme/theme?id=' + id + '&name=' + name
+    })
   }
 })

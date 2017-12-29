@@ -1,66 +1,44 @@
 // pages/product/product.js
+import { Product } from '../product/product-model.js';
+var product = new Product();
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-  
+    countsArray: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    productCounts: 1,
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-  
+    // options 为传参
+    var id = options.id;
+    this._onLoad(id);
   },
 
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function () {
-  
+  _onLoad: function(id) {
+    product.getDetailInfo(id, (data) => {
+      this.setData({
+        product: data
+      })
+    })
   },
 
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow: function () {
-  
+  bindPickerChange: function(event) {
+    console.log(event);
+    this.setData({
+      productCounts: this.data.countsArray[event.detail.value],
+    })
   },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
-  
+  //切换详情面板
+  onTabsItemTap: function (event) {
+    var index = product.getDataSet(event, 'index');
+    this.setData({
+      currentTabsIndex: index
+    });
   },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function () {
-  
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {
-  
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function () {
-  
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function () {
-  
-  }
 })
