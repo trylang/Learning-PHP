@@ -9,6 +9,7 @@ Page({
   data: {
     countsArray: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     productCounts: 1,
+    currentTabsIndex: 0
   },
 
   /**
@@ -29,7 +30,6 @@ Page({
   },
 
   bindPickerChange: function(event) {
-    console.log(event);
     this.setData({
       productCounts: this.data.countsArray[event.detail.value],
     })

@@ -43,22 +43,22 @@
       </block>
     </view>
     <view class="product-detail-box">
-      <view class="product-detail-imgs" >
-        <block wx:for="{{product.imgs}}" wx:key="unique">
-          <image src="{{item.img_url.url}}" mode="aspectFill"></image>
-        </block>
-      </view>
-      <view class="product-detail-properties">
-        <block wx:for="{{product.properties}}" wx:key="unique">
-          <view class="properties-item">
-            <view class="properties-name">{{item.name}}</view>
-            <view class="properties-detail">{{item.detail}}</view>
-          </view>
-        </block>
-      </view>
-      <view class="product-detail-protect">
-        <view>七天无理由免费退货</view>
-      </view>
-    </view>
+            <view class="product-detail-imgs" hidden="{{currentTabsIndex!=0}}">
+                <block wx:for="{{product.imgs}}"wx:key="unique" >
+                    <image src="{{item.img_url.url}}" mode="aspectFill"></image>
+                </block>
+            </view>
+            <view class="product-detail-properties" hidden="{{currentTabsIndex!=1}}">
+                <block wx:for="{{product.properties}}" wx:key="unique">
+                    <view class="properties-item">
+                        <view class="properties-name">{{item.name}}</view>
+                        <view class="properties-detail">{{item.detail}}</view>
+                    </view>
+                </block>
+            </view>
+            <view class="product-detail-protect" hidden="{{currentTabsIndex!=2}}">
+                <view>七天无理由免费退货</view>
+            </view>
+        </view>
   </view>
 </view>
